@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HVAC Replacement Cost Estimator</title>
+  <meta name="description" content="Get a fast HVAC replacement cost estimate and request a professional quote." />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9dee8;
+      --accent: #0b69ff;
+      --accent-dark: #0853c7;
+      --success: #137a3f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 28px 16px 48px; }
+    .hero { text-align: center; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; }
+    .hero p { color: var(--muted); font-size: 1.05rem; margin: 0 auto; max-width: 620px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(18, 31, 53, 0.06);
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-weight: 700; font-size: .93rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { min-height: 95px; resize: vertical; }
+    .button {
+      width: 100%;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 14px 18px;
+      cursor: pointer;
+    }
+    .button:hover { background: var(--accent-dark); }
+    .result {
+      display: none;
+      margin-top: 18px;
+      border-radius: 14px;
+      background: #eef5ff;
+      padding: 18px;
+      border: 1px solid #cfe0ff;
+    }
+    .result.show { display: block; }
+    .result h2 { margin: 0 0 8px; font-size: 1.25rem; }
+    .price { font-size: 2rem; font-weight: 900; margin: 3px 0 10px; }
+    .note { color: var(--muted); font-size: .9rem; line-height: 1.45; }
+    .lead {
+      display: none;
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .lead.show { display: block; }
+    .lead h3 { margin-top: 0; }
+    .success {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      background: #eefaf2;
+      border: 1px solid #bfe6cc;
+      color: var(--success);
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .success.show { display: block; }
+    .brand {
+      font-weight: 900;
+      letter-spacing: .02em;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-top: 18px;
+    }
+    @media (max-width: 620px) {
+      .grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="brand">YOUR HVAC COMPANY</div>
+      <h1>What might a new AC system cost?</h1>
+      <p>Get a fast ballpark estimate in under a minute. No pressure, no obligation.</p>
+    </section>
+
+    <section class="card">
+      <form id="estimateForm">
+        <div class="grid">
+          <div class="field">
+            <label for="sqft">Home size</label>
+            <input id="sqft" type="number" min="500" max="10000" step="50" placeholder="e.g. 1800" required />
+          </div>
+
+          <div class="field">
+            <label for="systemAge">Current system age</label>
+            <select id="systemAge" required>
+              <option value="">Select</option>
+              <option value="0">Under 5 years</option>
+              <option value="1">5–9 years</option>
+              <option value="2">10–14 years</option>
+              <option value="3">15+ years</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="efficiency">Preferred efficiency</label>
+            <select id="efficiency" required>
+              <option value="">Select</option>
+              <option value="standard">Standard efficiency</option>
+              <option value="high">High efficiency</option>
+              <option value="premium">Premium / variable speed</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="ducts">Ductwork condition</label>
+            <select id="ducts" required>
+              <option value="">Select</option>
+              <option value="good">Good / no known issues</option>
+              <option value="some">Some repairs may be needed</option>
+              <option value="replace">Likely needs replacement</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="issue">Main problem</label>
+            <select id="issue" required>
+              <option value="">Select</option>
+              <option value="replace">Old system / planning replacement</option>
+              <option value="cooling">Not cooling well</option>
+              <option value="breakdowns">Frequent breakdowns</option>
+              <option value="bills">High electric bills</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="button" type="submit">Show My Estimate</button>
+      </form>
+
+      <div id="result" class="result">
+        <h2>Your rough replacement estimate</h2>
+        <div id="price" class="price">$0 – $0</div>
+        <div id="details" class="note"></div>
+      </div>
+
+      <div id="leadSection" class="lead">
+        <h3>Want an exact quote?</h3>
+        <p class="note">Send your info and the HVAC company can follow up to confirm system size, equipment and installation needs.</p>
+
+        <form id="leadForm">
+          <div class="grid">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" required />
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" type="tel" required />
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" />
+            </div>
+
+            <div class="field">
+              <label for="zip">ZIP code</label>
+              <input id="zip" inputmode="numeric" maxlength="10" required />
+            </div>
+
+            <div class="field full">
+              <label for="notes">Anything else?</label>
+              <textarea id="notes" placeholder="Optional"></textarea>
+            </div>
+          </div>
+
+          <button class="button" type="submit">Request My Quote</button>
+        </form>
+
+        <div id="success" class="success">Lead captured. Connect this form to Formspree, Zapier, Make, Google Sheets, or your CRM to receive submissions automatically.</div>
+      </div>
+    </section>
+
+    <footer>
+      Estimates are for general planning only and are not a binding quote. Final pricing depends on equipment, load calculation, electrical work, ductwork, permits and installation conditions.
+    </footer>
+  </main>
+
+  <script>
+    // EASY-TO-EDIT PRICING MODEL
+    // Adjust these numbers to match your actual market and equipment pricing.
+    const CONFIG = {
+      baseLow: 6200,
+      baseHigh: 8500,
+      sqftBreakpoint: 1600,
+      extraPer500Low: 650,
+      extraPer500High: 950,
+      efficiency: {
+        standard: [0, 0],
+        high: [1400, 2200],
+        premium: [3200, 5200]
+      },
+      ducts: {
+        good: [0, 0],
+        some: [800, 2200],
+        replace: [2500, 6000]
+      },
+      oldSystem: {
+        0: [0, 0],
+        1: [0, 250],
+        2: [200, 600],
+        3: [400, 900]
+      }
+    };
+
+    let latestEstimate = null;
+
+    function money(n) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+      }).format(Math.round(n / 50) * 50);
+    }
+
+    document.getElementById('estimateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const sqft = Number(document.getElementById('sqft').value);
+      const systemAge = document.getElementById('systemAge').value;
+      const efficiency = document.getElementById('efficiency').value;
+      const ducts = document.getElementById('ducts').value;
+      const issue = document.getElementById('issue').value;
+
+      let low = CONFIG.baseLow;
+      let high = CONFIG.baseHigh;
+
+      const extraSqft = Math.max(0, sqft - CONFIG.sqftBreakpoint);
+      const blocks = Math.ceil(extraSqft / 500);
+
+      low += blocks * CONFIG.extraPer500Low;
+      high += blocks * CONFIG.extraPer500High;
+
+      low += CONFIG.efficiency[efficiency][0];
+      high += CONFIG.efficiency[efficiency][1];
+
+      low += CONFIG.ducts[ducts][0];
+      high += CONFIG.ducts[ducts][1];
+
+      low += CONFIG.oldSystem[systemAge][0];
+      high += CONFIG.oldSystem[systemAge][1];
+
+      latestEstimate = {
+        sqft,
+        systemAge,
+        efficiency,
+        ducts,
+        issue,
+        low,
+        high
+      };
+
+      document.getElementById('price').textContent = `${money(low)} – ${money(high)}`;
+      document.getElementById('details').textContent =
+        `Based on a ${sqft.toLocaleString()} sq ft home, ${efficiency.replace('-', ' ')} equipment, and the selected ductwork condition. An in-home assessment is needed for exact sizing and pricing.`;
+
+      document.getElementById('result').classList.add('show');
+      document.getElementById('leadSection').classList.add('show');
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    document.getElementById('leadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const lead = {
+        name: document.getElementById('name').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        zip: document.getElementById('zip').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        estimate: latestEstimate,
+        createdAt: new Date().toISOString()
+      };
+
+      // Prototype behavior: save lead in browser and log it.
+      // Replace this with a Formspree/Zapier/Make/CRM webhook for production use.
+      const saved = JSON.parse(localStorage.getItem('hvacLeads') || '[]');
+      saved.push(lead);
+      localStorage.setItem('hvacLeads', JSON.stringify(saved));
+
+      console.log('HVAC lead captured:', lead);
+      document.getElementById('success').classList.add('show');
+      document.getElementById('leadForm').reset();
+    });
+  </script>
+</body>
+</html>
